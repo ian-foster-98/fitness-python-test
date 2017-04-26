@@ -1,23 +1,41 @@
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*,cover
-.hypothesis/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
-# dotnet stuff
-**/bin
-**/obj
+# C extensions
+*.so
 
-# python stuff
-.pyc*
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# vscode stuff
-**/.vsproj
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
 
-# serverless stuff
-.serverless/*
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Serverless framework
+.serverless
+
+# Python libraries
+*.dist-info

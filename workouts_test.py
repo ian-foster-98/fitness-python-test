@@ -10,10 +10,11 @@ class WorkoutsTest(unittest.TestCase):
         self.sns_view_topic = "project_new_weight_test"
 
         # Set up dynamo db client
-        ### TODO : Use environment variables to determine name of tables
-        self.dynamodb = boto3.resource('dynamodb', endpoint_url="http://localhost:8000")
-        self.event_store_table = self.dynamodb.Table('Workout_event_store_test')
-        self.view_store_table = self.dynamodb.Table('Workout_view_store_test')
+        self.dynamodb = boto3.resource('dynamodb')
+        self.event_store_table_name = 'WorkoutEventStoreTest'
+        self.view_store_table_name = 'WorkoutViewStoreTest'
+        self.event_store_table = None
+        self.view_store_table = None
 
         # set up workout object
         self.workout = Workout(self.sns_client, 
@@ -21,7 +22,6 @@ class WorkoutsTest(unittest.TestCase):
             self.event_store_table, 
             self.sns_view_topic, 
             self.view_store_table)
-
 
     def test_missing_workout_name(self):
         with self.assertRaises(ValueError) as context:
