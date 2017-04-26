@@ -1,7 +1,9 @@
 import boto3
-import datetime
+import datetime, time
 import json
 from workout_definitions import definitions, increment_by_percentage
+from boto3.dynamodb.conditions import Key, Attr
+from decimal import Decimal
 
 ### TODO: error logging
 ### TODO: monitoring code (X-ray?)
@@ -43,7 +45,8 @@ class Workout(object):
 
         # check date/time
         exists('date_of_exercise')
-        datetime.datetime.strptime(exercise_details['date_of_exercise'], '%Y-%m-%d')
+        date_of_exercise = datetime.datetime.strptime(exercise_details['date_of_exercise'], '%Y-%m-%d')
+        exercise_details['date_of_exercise'] = str(time.mktime(date_of_exercise.timetuple()))
 
         # check weight
         exists('weight')
@@ -64,8 +67,8 @@ class Workout(object):
             Message=json.dumps(exercise_details)
         )
 
-    def save_exercise_event(self, exercise_details):
-        self.event_store_table.put_item( Item=exercise_details )
+    def save_exercise_event(self, exercise_event):
+        self.event_store_table.put_item( Item=exercise_event )
 
     def get_sns_topic(self, topic_name = '', next_token =''):
         topics_info = self.sns_client.list_topics(NextToken=next_token)
@@ -77,31 +80,50 @@ class Workout(object):
             return None
         return get_sns_topic(topic_name, topics_info['NextToken'])
 
-    def get_exercise_details(self, exercise_name, date_of_exercise):
-        # get all exercise events up to last date
 
-        # aggregate events to get latest state
 
-        # return exercise details
-        pass
 
-    def get_next_weight(self, exercise_name):
-        # get last two dates of this exercise
+    def get_next_weight(self, exercises):
+        exercises.sort()
 
-        # get exercise details for the two performances
+        # If only one, return latest weight
+        if len(exercises) == 1:
+            return exercises[0]['weight']
 
-        # work out next weight to perform and return value
-        pass
+        # If weights are different, return the latest weight
+        if exercises[0]['weight'] != exercises[1]['weight']:
+            return exercises[1]['weight']
 
-    def set_next_exercise_weight(self, next_weight_details):
-        # validate exercise details
-
-        # send message to SNS topic
-        pass
+        # Calculate the next weight in the sequence
+        workout_name = exercises[0]['workout_name']
+        exercise_name = exercises[0]['exercise_name']
+        increment_function = definitions[workout_name][exercise_name]['increment_function']
+        return increment_function(exercises[1]['weight'])
 
     def project_exercise_details(self, exercise_details):
-        # save new weight value to view store
-        pass
+        # get value of previous exercise
+        exercise_name = exercise_details['exercise_name']
+        results = self.event_store_table.query(ProjectionExpression='workout_name, exercise_name, date_of_exercise, weight', KeyConditionExpression=Key('exercise_name').eq(exercise_name), Limit=2)
+
+        # get next weight value for this exercise
+        exercises = results['Items']
+        weight = self.get_next_weight(exercises)
+
+        # send message to SNS topic
+        message = {
+            'exercise_name': exercise_name,
+            'weight': weight
+        }
+        topic_arn = self.get_sns_topic(self.sns_view_topic)
+        response = self.sns_client.publish(
+            TargetArn=topic_arn,
+            Message=json.dumps(message)
+        )
+
+    def save_exercise_view(self, exercise_view):
+        self.view_store_table.put_item( Item = exercise_view )
+
+
 
     def get_next_workout(self, workout_name):
         # find the weights for each excericse in the workout

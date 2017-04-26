@@ -33,6 +33,12 @@ functions:
     handler: handler.save_exercise_event
     events:
       - sns: ${self:provider.environment.EVENT_SNS_TOPIC}
+  projectexercisedetails:
+    handler: handler.project_exercise_details
+  saveexerciseview:
+    handler: handler.save_exercise_view
+    events:
+      - sns: ${self:provider.environment.VIEW_SNS_TOPIC}
 
 resources:
   Resources:

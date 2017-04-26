@@ -1,5 +1,7 @@
 def increment_by_percentage(weight):
-    pass
+    weight = float(weight)
+    new_weight = weight * 1.1
+    return new_weight - (new_weight % 2.5)
 
 definitions = {
     "standard_workout_upper": {

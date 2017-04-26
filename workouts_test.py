@@ -1,5 +1,6 @@
 import unittest, boto3
 from workouts import Workout
+from decimal import Decimal
 
 class WorkoutsTest(unittest.TestCase):
     
@@ -22,6 +23,21 @@ class WorkoutsTest(unittest.TestCase):
             self.event_store_table, 
             self.sns_view_topic, 
             self.view_store_table)
+
+    def test_get_next_weight_single(self):
+        exercises = [{u'workout_name': u'standard_workout_lower', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492610400.0', u'weight': Decimal('40')}]
+        next_weight = self.workout.get_next_weight(exercises)
+        self.assertEqual(40, next_weight)
+
+    def test_get_next_weight_different(self):
+        exercises = [{u'workout_name': u'standard_workout_lower', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492610400.0', u'weight': Decimal('40')}, {u'workout_name': u'standard_workout_lower', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492819200.0', u'weight': Decimal('42.5')}]
+        next_weight = self.workout.get_next_weight(exercises)
+        self.assertEqual(42.5, next_weight)
+
+    def test_get_next_weight_same(self):
+        exercises = [{u'workout_name': u'standard_workout_lower', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492610400.0', u'weight': Decimal('40')}, {u'workout_name': u'standard_workout_lower', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492819200.0', u'weight': Decimal('40')}]
+        next_weight = self.workout.get_next_weight(exercises)
+        self.assertEqual(42.5, next_weight)
 
     def test_missing_workout_name(self):
         with self.assertRaises(ValueError) as context:
