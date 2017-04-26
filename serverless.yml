@@ -35,6 +35,10 @@ functions:
       - sns: ${self:provider.environment.EVENT_SNS_TOPIC}
   projectexercisedetails:
     handler: handler.project_exercise_details
+#    events:
+#      - stream:
+#          type: dynamodb
+ #         arn: arn:aws:dynamodb:ap-southeast-2:722173032442:table/workouts-dev-event-store/stream/2017-04-26T08:15:54.527
   saveexerciseview:
     handler: handler.save_exercise_view
     events:
@@ -63,7 +67,7 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         StreamSpecification:
-          StreamViewType: NEW_AND_OLD_IMAGES
+          StreamViewType: NEW_IMAGE
         TableName: ${self:provider.environment.EVENT_STORE_TABLE}
     ViewStoreDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'

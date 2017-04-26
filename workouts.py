@@ -101,15 +101,12 @@ class Workout(object):
         return increment_function(exercises[1]['weight'])
 
     def project_exercise_details(self, exercise_details):
-        # get value of previous exercise
-        exercise_name = exercise_details['exercise_name']
+        exercise_name = exercise_details['exercise_name']['S']
         results = self.event_store_table.query(ProjectionExpression='workout_name, exercise_name, date_of_exercise, weight', KeyConditionExpression=Key('exercise_name').eq(exercise_name), Limit=2)
 
-        # get next weight value for this exercise
         exercises = results['Items']
-        weight = self.get_next_weight(exercises)
+        weight = float(self.get_next_weight(exercises))
 
-        # send message to SNS topic
         message = {
             'exercise_name': exercise_name,
             'weight': weight
@@ -121,6 +118,7 @@ class Workout(object):
         )
 
     def save_exercise_view(self, exercise_view):
+        exercise_view['weight'] = Decimal(exercise_view['weight'])
         self.view_store_table.put_item( Item = exercise_view )
 
 
