@@ -67,6 +67,8 @@ class Workout(object):
             Message=json.dumps(exercise_details)
         )
 
+        return response
+
     def save_exercise_event(self, exercise_event):
         self.event_store_table.put_item( Item=exercise_event )
 
@@ -124,7 +126,20 @@ class Workout(object):
 
 
     def get_next_workout(self, workout_name):
-        # find the weights for each excericse in the workout
+        # find the weights for each exercise in the workout
+        exercises = definitions[workout_name].keys()
+        exercise_details = {e: self.get_weight(e) for e in exercises}
+        return {
+            'workout_name': workout_name,
+            'exercise_details': exercise_details
+        }
 
-        # return definition of workout
-        pass
+    def get_weight(self, exercise_name):
+        exercise = self.view_store_table.get_item(
+            Key={
+                'exercise_name': exercise_name
+            }
+        )
+        if exercise.has_key('Item'):
+            return str(exercise['Item']['weight'])
+        return ''

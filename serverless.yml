@@ -18,7 +18,17 @@ provider:
         - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.VIEW_STORE_TABLE}"
     - Effect: "Allow"
       Action:
-        - "sns:*"
+        - sns:*
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - dynamodb:GetRecords
+        - dynamodb:GetShardIterator
+        - dynamodb:DescribeStream
+        - dynamodb:ListStreams
+        - logs:CreateLogGroup
+        - logs:CreateLogStream
+        - logs:PutLogEvents
       Resource: "*"
 
 functions:
@@ -43,6 +53,13 @@ functions:
     handler: handler.save_exercise_view
     events:
       - sns: ${self:provider.environment.VIEW_SNS_TOPIC}
+  getnextworkout:
+    handler: handler.get_next_workout
+    events:
+      - http:
+          path: workouts
+          method: get
+          cors: true
 
 resources:
   Resources:
@@ -67,7 +84,7 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         StreamSpecification:
-          StreamViewType: NEW_IMAGE
+          StreamViewType: NEW_AND_OLD_IMAGES
         TableName: ${self:provider.environment.EVENT_STORE_TABLE}
     ViewStoreDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'

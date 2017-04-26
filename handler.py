@@ -45,6 +45,7 @@ def save_exercise_event(event, context):
         return { "statusCode": 500, "body": json.dumps(e.message) }
 
 def project_exercise_details(event, context):
+    print 'event = {}'.format(event)
     exercise_details = event['Records'][0]['dynamodb']['NewImage']
     try:
         result = workout.project_exercise_details(exercise_details)
@@ -57,5 +58,13 @@ def save_exercise_view(event, context):
     try:
         result = workout.save_exercise_view(item)
         return { "statusCode": 200 }
+    except ValueError as e:
+        return { "statusCode": 500, "body": json.dumps(e.message) }
+
+def get_next_workout(event, context):
+    workout_name = event['queryStringParameters']['workout_name']
+    try:
+        result = workout.get_next_workout(workout_name)
+        return { "statusCode": 200, "body": json.dumps(result) }
     except ValueError as e:
         return { "statusCode": 500, "body": json.dumps(e.message) }
