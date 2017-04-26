@@ -1,18 +1,17 @@
 import json
 import boto3
+import os
 from workouts import Workout
 
 # Set up sns client
 sns_client = boto3.client("sns")
-sns_event_topic = "new_exercise"
-sns_view_topic = "project_new_weight"
+sns_event_topic = os.environ["EVENT_SNS_TOPIC"]
+sns_view_topic = os.environ["VIEW_SNS_TOPIC"]
 
 # Set up dynamo db client
-### TODO : Use environment variables to determine name of tables
-dynamodb = boto3.resource('dynamodb', 
-    endpoint_url="http://localhost:8000")
-event_store_table = dynamodb.Table('Workout_event_store')
-view_store_table = dynamodb.Table('Workout_view_store')
+dynamodb = boto3.resource('dynamodb')
+event_store_table = dynamodb.Table(os.environ["EVENT_STORE_TABLE"])
+view_store_table = dynamodb.Table(os.environ["VIEW_STORE_TABLE"])
 
 # set up workout object
 workout = Workout(sns_client, sns_event_topic, event_store_table, sns_view_topic, view_store_table)
@@ -31,43 +30,17 @@ workout = Workout(sns_client, sns_event_topic, event_store_table, sns_view_topic
 # }
 ###
 def save_exercise(event, context):
-    # get relevant body from event
-    exercise_details = {}
+    try:
+        result = workout.new_exercise(event)
+        return { "statusCode": 200 }
+    except ValueError as e:
+        return { "statusCode": 500, "body": json.dumps(e.message) }
 
-    # save exercise details
-    workout.new_exercise(exercise_details)
-
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(exercise_details)
-    }
-
-    return response
-
-def get_next_workout(event, context):
-    # get workout name from event
-    workout_name = ""
-
-    # get workout details for given workout definition
-    workout_details = workout.get_next_workout(workout_name)
-
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(workout_details)
-    }
-
-    return response
-
-def project_exercise(event, context):
-    body = {
-        "message": "project_exercise",
-        "input": event
-    }
-
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(body)
-    }
-
-    return response
-
+def save_exercise_event(event, context):
+    item = json.loads(event['Records'][0]['Sns']['Message'])
+    try:
+        result = workout.save_exercise_event(item)
+        return { "statusCode": 200 }
+    except ValueError as e:
+        return { "statusCode": 500, "body": json.dumps(e.message) }
+    

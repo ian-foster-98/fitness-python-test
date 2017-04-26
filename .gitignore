@@ -37,5 +37,8 @@ pip-delete-this-directory.txt
 # Serverless framework
 .serverless
 
+# VSCode setup
+.vscode
+
 # Python libraries
 *.dist-info

@@ -1,4 +1,6 @@
-import boto3, datetime
+import boto3
+import datetime
+import json
 from workout_definitions import definitions, increment_by_percentage
 
 ### TODO: error logging
@@ -21,52 +23,59 @@ class Workout(object):
         self.view_store_table = view_store_table
 
     def new_exercise(self, exercise_details):
+        def exists(key):
+            if not exercise_details.has_key(key):
+                raise ValueError('{}} not found in input.'.format(key))
+        def is_positive(key):
+            if exercise_details[key] < 0:
+                raise ValueError('{0} is not a valid {1}.'.format(exercise_details[key], key))
+
+
         # check workout exists and is valid
-        if not exercise_details.has_key('workout_name'):
-            raise ValueError('workout_name not found in input.')
+        exists('workout_name')
         if not definitions.has_key(exercise_details['workout_name']):
             raise ValueError('workout_name {} not found in workout definition.'.format(exercise_details['workout_name']))
 
         # check exercise name
-        if not exercise_details.has_key('exercise_name'):
-            raise ValueError('workout_name not found in input.')
+        exists('exercise_name')
         if not definitions[exercise_details['workout_name']].has_key(exercise_details['exercise_name']):
             raise ValueError('exercise_name {} not found in workout definition.'.format(exercise_details['exercise_name']))
 
         # check date/time
-        if not exercise_details.has_key('date_of_exercise'):
-            raise ValueError('date_of_exercise not found in input.')
+        exists('date_of_exercise')
         datetime.datetime.strptime(exercise_details['date_of_exercise'], '%Y-%m-%d')
 
         # check weight
-        if not exercise_details.has_key('weight'):
-            raise ValueError('exercise_name not found in input.')
-        if exercise_details['weight'] < 0:
-            raise ValueError('weight {} is not a valid weight.'.format(exercise_details['weight']))
+        exists('weight')
+        is_positive('weight')
 
         # check sets
-        if not exercise_details.has_key('set1_reps'):
-            raise ValueError('set1_reps not found in input.')
-        if exercise_details['set1_reps'] < 0:
-            raise ValueError('set1_reps {} is not a valid set.'.format(exercise_details['set1_reps']))
-        if not exercise_details.has_key('set2_reps'):
-            raise ValueError('set2_reps not found in input.')
-        if exercise_details['set2_reps'] < 0:
-            raise ValueError('set2_reps {} is not a valid set.'.format(exercise_details['set2_reps']))
-        if not exercise_details.has_key('set3_reps'):
-            raise ValueError('set3_reps not found in input.')
-        if exercise_details['set3_reps'] < 0:
-            raise ValueError('set3_reps {} is not a valid set.'.format(exercise_details['set3_reps']))
+        exists('set1_reps')
+        is_positive('set1_reps')
+        exists('set2_reps')
+        is_positive('set2_reps')
+        exists('set3_reps')
+        is_positive('set3_reps')
 
         # send message to SNS topic
-        response = client.publish(
-            TargetArn=self.sns_event_topic,
+        topic_arn = self.get_sns_topic(self.sns_event_topic)        
+        response = self.sns_client.publish(
+            TargetArn=topic_arn,
             Message=json.dumps(exercise_details)
         )
 
     def save_exercise_event(self, exercise_details):
-        # save event to event store in DynamoDB
-        pass
+        self.event_store_table.put_item( Item=exercise_details )
+
+    def get_sns_topic(self, topic_name = '', next_token =''):
+        topics_info = self.sns_client.list_topics(NextToken=next_token)
+        topics = topics_info['Topics']
+        arn = [topic for topic in topics if topic['TopicArn'].find(topic_name) > -1]
+        if len(arn) > 0:
+            return arn[0]['TopicArn']
+        if 'NextToken' not in topics_info:
+            return None
+        return get_sns_topic(topic_name, topics_info['NextToken'])
 
     def get_exercise_details(self, exercise_name, date_of_exercise):
         # get all exercise events up to last date

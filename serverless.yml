@@ -5,6 +5,8 @@ provider:
   stage: dev
   runtime: python2.7
   environment:
+    EVENT_SNS_TOPIC: ${self:service}-${opt:stage, self:provider.stage}-event-sns-topic
+    VIEW_SNS_TOPIC: ${self:service}-${opt:stage, self:provider.stage}-view-sns-topic
     EVENT_STORE_TABLE: ${self:service}-${opt:stage, self:provider.stage}-event-store
     VIEW_STORE_TABLE: ${self:service}-${opt:stage, self:provider.stage}-view-store
   iamRoleStatements:
@@ -14,15 +16,12 @@ provider:
       Resource: 
         - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.EVENT_STORE_TABLE}"
         - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.VIEW_STORE_TABLE}"
+    - Effect: "Allow"
+      Action:
+        - "sns:*"
+      Resource: "*"
 
 functions:
-  getnextworkout:
-    handler: handler.get_next_workout
-    events:
-      - http:
-          path: workouts
-          method: get
-          cors: true
   saveexercise:
     handler: handler.save_exercise
     events:
@@ -30,15 +29,10 @@ functions:
           path: workouts
           method: post
           cors: true
-  projectexercise:
-    handler: handler.project_exercise
+  saveexerciseevent:
+    handler: handler.save_exercise_event
     events:
-      - stream:
-        type: dynamodb
-        arn:
-          Fn::GetAtt:
-            - EventStoreDynamoDbTable
-            - StreamArn
+      - sns: ${self:provider.environment.EVENT_SNS_TOPIC}
 
 resources:
   Resources:
@@ -47,17 +41,17 @@ resources:
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: ExerciseName
+            AttributeName: exercise_name
             AttributeType: S
           -
-            AttributeName: DateOfExercise
+            AttributeName: date_of_exercise
             AttributeType: S
         KeySchema:
           -
-            AttributeName: ExerciseName
+            AttributeName: exercise_name
             KeyType: HASH
           -
-            AttributeName: DateOfExercise
+            AttributeName: date_of_exercise
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
@@ -70,11 +64,11 @@ resources:
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: ExerciseName
+            AttributeName: exercise_name
             AttributeType: S
         KeySchema:
           -
-            AttributeName: ExerciseName
+            AttributeName: exercise_name
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
