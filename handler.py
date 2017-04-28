@@ -68,3 +68,6 @@ def get_next_workout(event, context):
         return { "statusCode": 200, "body": json.dumps(result) }
     except ValueError as e:
         return { "statusCode": 500, "body": json.dumps(e.message) }
+
+def get_workout_descriptions(event, context):
+    return workout.get_workout_descriptions()

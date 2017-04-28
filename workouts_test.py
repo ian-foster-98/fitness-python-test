@@ -25,17 +25,17 @@ class WorkoutsTest(unittest.TestCase):
             self.view_store_table)
 
     def test_get_next_weight_single(self):
-        exercises = [{u'workout_name': u'standard_workout_lower', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492610400.0', u'weight': Decimal('40')}]
+        exercises = [{u'workout_name': u'Lower Body Workout', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492610400.0', u'weight': Decimal('40')}]
         next_weight = self.workout.get_next_weight(exercises)
         self.assertEqual(40, next_weight)
 
     def test_get_next_weight_different(self):
-        exercises = [{u'workout_name': u'standard_workout_lower', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492610400.0', u'weight': Decimal('40')}, {u'workout_name': u'standard_workout_lower', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492819200.0', u'weight': Decimal('42.5')}]
+        exercises = [{u'workout_name': u'Lower Body Workout', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492610400.0', u'weight': Decimal('40')}, {u'workout_name': u'Lower Body Workout', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492819200.0', u'weight': Decimal('42.5')}]
         next_weight = self.workout.get_next_weight(exercises)
         self.assertEqual(42.5, next_weight)
 
     def test_get_next_weight_same(self):
-        exercises = [{u'workout_name': u'standard_workout_lower', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492610400.0', u'weight': Decimal('40')}, {u'workout_name': u'standard_workout_lower', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492819200.0', u'weight': Decimal('40')}]
+        exercises = [{u'workout_name': u'Lower Body Workout', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492610400.0', u'weight': Decimal('40')}, {u'workout_name': u'Lower Body Workout', u'exercise_name': u'Back Squat', u'date_of_exercise': u'1492819200.0', u'weight': Decimal('40')}]
         next_weight = self.workout.get_next_weight(exercises)
         self.assertEqual(42.5, next_weight)
 
@@ -70,7 +70,7 @@ class WorkoutsTest(unittest.TestCase):
     def test_missing_exercise_name(self):
         with self.assertRaises(ValueError) as context:
             exercise_details = {
-                "workout_name": "standard_workout_lower",
+                "workout_name": "Lower Body Workout",
                 "date_of_exercise": "2017-04-22",
                 "weight": 50,
                 "set1_reps": 6,
@@ -83,7 +83,7 @@ class WorkoutsTest(unittest.TestCase):
     def test_invalid_exercise_name(self):
         with self.assertRaises(ValueError) as context:
             exercise_details = {
-                "workout_name": "standard_workout_lower",
+                "workout_name": "Lower Body Workout",
                 "exercise_name": "test empty",
                 "date_of_exercise": "2017-04-22",
                 "weight": 50,
@@ -98,7 +98,7 @@ class WorkoutsTest(unittest.TestCase):
     def test_missing_date_of_exercise(self):
         with self.assertRaises(ValueError) as context:
             exercise_details = {
-                "workout_name": "standard_workout_lower",
+                "workout_name": "Lower Body Workout",
                 "exercise_name": "Back Squat",
                 "weight": 50,
                 "set1_reps": 6,
@@ -111,7 +111,7 @@ class WorkoutsTest(unittest.TestCase):
     def test_invalid_date_of_exercise(self):
         with self.assertRaises(ValueError) as context:
             exercise_details = {
-                "workout_name": "standard_workout_lower",
+                "workout_name": "Lower Body Workout",
                 "exercise_name": "Back Squat",
                 "date_of_exercise": "2017-04-42",
                 "weight": 50,
@@ -126,7 +126,7 @@ class WorkoutsTest(unittest.TestCase):
     def test_missing_weight(self):
         with self.assertRaises(ValueError) as context:
             exercise_details = {
-                "workout_name": "standard_workout_lower",
+                "workout_name": "Lower Body Workout",
                 "exercise_name": "Back Squat",
                 "date_of_exercise": "2017-04-22",
                 "set1_reps": 6,
@@ -139,7 +139,7 @@ class WorkoutsTest(unittest.TestCase):
     def test_invalid_weight(self):
         with self.assertRaises(ValueError) as context:
             exercise_details = {
-                "workout_name": "standard_workout_lower",
+                "workout_name": "Lower Body Workout",
                 "exercise_name": "Back Squat",
                 "date_of_exercise": "2017-04-22",
                 "weight": -5,
@@ -154,7 +154,7 @@ class WorkoutsTest(unittest.TestCase):
     def test_missing_set1_reps(self):
         with self.assertRaises(ValueError) as context:
             exercise_details = {
-                "workout_name": "standard_workout_lower",
+                "workout_name": "Lower Body Workout",
                 "exercise_name": "Back Squat",
                 "date_of_exercise": "2017-04-22",
                 "weight": 50,
@@ -167,7 +167,7 @@ class WorkoutsTest(unittest.TestCase):
     def test_invalid_set1_reps(self):
         with self.assertRaises(ValueError) as context:
             exercise_details = {
-                "workout_name": "standard_workout_lower",
+                "workout_name": "Lower Body Workout",
                 "exercise_name": "Back Squat",
                 "date_of_exercise": "2017-04-22",
                 "weight": 50,
@@ -182,7 +182,7 @@ class WorkoutsTest(unittest.TestCase):
     def test_missing_set2_reps(self):
         with self.assertRaises(ValueError) as context:
             exercise_details = {
-                "workout_name": "standard_workout_lower",
+                "workout_name": "Lower Body Workout",
                 "exercise_name": "Back Squat",
                 "date_of_exercise": "2017-04-22",
                 "weight": 50,
@@ -195,7 +195,7 @@ class WorkoutsTest(unittest.TestCase):
     def test_invalid_set2_reps(self):
         with self.assertRaises(ValueError) as context:
             exercise_details = {
-                "workout_name": "standard_workout_lower",
+                "workout_name": "Lower Body Workout",
                 "exercise_name": "Back Squat",
                 "date_of_exercise": "2017-04-22",
                 "weight": 50,
@@ -210,7 +210,7 @@ class WorkoutsTest(unittest.TestCase):
     def test_missing_set3_reps(self):
         with self.assertRaises(ValueError) as context:
             exercise_details = {
-                "workout_name": "standard_workout_lower",
+                "workout_name": "Lower Body Workout",
                 "exercise_name": "Back Squat",
                 "date_of_exercise": "2017-04-22",
                 "weight": 50,
@@ -223,7 +223,7 @@ class WorkoutsTest(unittest.TestCase):
     def test_invalid_set3_reps(self):
         with self.assertRaises(ValueError) as context:
             exercise_details = {
-                "workout_name": "standard_workout_lower",
+                "workout_name": "Lower Body Workout",
                 "exercise_name": "Back Squat",
                 "date_of_exercise": "2017-04-22",
                 "weight": 50,

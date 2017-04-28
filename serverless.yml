@@ -60,6 +60,13 @@ functions:
           path: workouts
           method: get
           cors: true
+  getworkoutdescriptions:
+    handler: handler.get_workout_descriptions
+    events:
+      - http:
+          path: workouts/definitions
+          method: get
+          cors: true
 
 resources:
   Resources:

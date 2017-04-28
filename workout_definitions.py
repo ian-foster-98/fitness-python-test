@@ -4,7 +4,7 @@ def increment_by_percentage(weight):
     return new_weight - (new_weight % 2.5)
 
 definitions = {
-    "standard_workout_upper": {
+    "Upper Body Workout": {
         "Dips": {
             "default_weight": 0,
             "increment_function": increment_by_percentage
@@ -26,7 +26,7 @@ definitions = {
             "increment_function": increment_by_percentage
         },
     },
-    "standard_workout_lower": {
+    "Lower Body Workout": {
         "Back Squat": {
             "default_weight": 20,
             "increment_function": increment_by_percentage

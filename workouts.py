@@ -24,6 +24,9 @@ class Workout(object):
         self.sns_view_topic = sns_view_topic
         self.view_store_table = view_store_table
 
+    def get_workout_descriptions():
+        return definitions.keys()
+
     def new_exercise(self, exercise_details):
         def exists(key):
             if not exercise_details.has_key(key):
