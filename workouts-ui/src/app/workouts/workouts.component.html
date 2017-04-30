@@ -1,0 +1,5 @@
+<div *ngFor="let workoutDefinition of workoutDefinitions">
+  <a routerLink="../exercises/{{workoutDefinition.name}}">
+    {{ workoutDefinition.name }}
+  </a>
+</div>

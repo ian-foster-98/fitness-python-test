@@ -1,0 +1,7 @@
+<p>
+  {{ workoutDefinitionName }}
+</p>
+
+<div *ngFor="let exercise of workoutDefinition">
+  <app-exercise [exerciseName]='exercise.exerciseName' [sets]='exercise.sets'></app-exercise>
+</div>

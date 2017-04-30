@@ -16,8 +16,6 @@ class Workout(object):
         event_store_table, 
         sns_view_topic, 
         view_store_table):
-        # cache to store lists of exercise events to avoid double-dipping to dynamo
-        self.exercise_events = {}
         self.sns_client = sns_client
         self.sns_event_topic = sns_event_topic
         self.event_store_table = event_store_table
