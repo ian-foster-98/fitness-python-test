@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Exercise } from "app/shared/exercise.model";
+import { ExerciseSet } from "app/shared/exerciseset.model";
 
 @Injectable()
 export class WorkoutDataService {
@@ -13,95 +15,46 @@ export class WorkoutDataService {
     ];
   }
 
-  workoutDetails(workoutName: string)
+  workoutDetails(workoutName: string): Exercise[]
   {
-    return [
-      {
-        'exerciseName': 'Back Squat',
-        'sets': [
-          {
-            'order': 1,
-            'weight': '50'            
-          },
-          {
-            'order': 2,
-            'weight': '50'            
-          },
-          {
-            'order': 3,
-            'weight': '50'            
-          }
-        ]
-      },
-      {
-        'exerciseName': 'Deadlift',
-        'sets': [
-          {
-            'order': 1,
-            'weight': '65'            
-          },
-          {
-            'order': 2,
-            'weight': '65'            
-          },
-          {
-            'order': 3,
-            'weight': '65'            
-          }
-        ]
-      },
-      {
-        'exerciseName': 'Lunges',
-        'sets': [
-          {
-            'order': 1,
-            'weight': '12.5'            
-          },
-          {
-            'order': 2,
-            'weight': '12.5'            
-          },
-          {
-            'order': 3,
-            'weight': '12.5'            
-          }
-        ]
-      },
-      {
-        'exerciseName': 'Overhead rows',
-        'sets': [
-          {
-            'order': 1,
-            'weight': '40'            
-          },
-          {
-            'order': 2,
-            'weight': '40'            
-          },
-          {
-            'order': 3,
-            'weight': '40'            
-          }
-        ]
-      },
-      {
-        'exerciseName': 'Stiff-legged deadlift',
-        'sets': [
-          {
-            'order': 1,
-            'weight': '50'            
-          },
-          {
-            'order': 2,
-            'weight': '50'            
-          },
-          {
-            'order': 3,
-            'weight': '50'            
-          }
-        ]
-      }
-    ]
+    let exercises:Exercise[] = [];
+
+    let sets:ExerciseSet[] = new Array<ExerciseSet>();
+    sets.push(new ExerciseSet(1, '50'));
+    sets.push(new ExerciseSet(2, '50'));
+    sets.push(new ExerciseSet(3, '50'));
+    let exercise: Exercise = new Exercise('Back Squat', sets);
+    exercises.push(exercise);
+
+    sets = new Array<ExerciseSet>();
+    sets.push(new ExerciseSet(1, '65'));
+    sets.push(new ExerciseSet(2, '65'));
+    sets.push(new ExerciseSet(3, '65'));
+    exercise = new Exercise('Deadlift', sets);
+    exercises.push(exercise);
+    
+    sets = new Array<ExerciseSet>();
+    sets.push(new ExerciseSet(1, '12.5'));
+    sets.push(new ExerciseSet(2, '12.5'));
+    sets.push(new ExerciseSet(3, '12.5'));
+    exercise = new Exercise('Lunges', sets);
+    exercises.push(exercise);
+    
+    sets = new Array<ExerciseSet>();
+    sets.push(new ExerciseSet(1, '40'));
+    sets.push(new ExerciseSet(2, '40'));
+    sets.push(new ExerciseSet(3, '40'));
+    exercise = new Exercise('Overhead rows', sets);
+    exercises.push(exercise);
+    
+    sets = new Array<ExerciseSet>();
+    sets.push(new ExerciseSet(1, '50'));
+    sets.push(new ExerciseSet(2, '50'));
+    sets.push(new ExerciseSet(3, '50'));
+    exercise = new Exercise('Stiff-legged deadlift', sets);
+    exercises.push(exercise);
+
+    return exercises;
   }
 
   saveExercise(exercise)

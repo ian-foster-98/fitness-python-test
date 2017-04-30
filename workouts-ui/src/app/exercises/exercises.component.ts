@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { WorkoutDataService } from '../workout-data.service';
 import { ActivatedRoute } from "@angular/router";
+import { Exercise } from "app/shared/exercise.model";
 
 @Component({
   selector: "app-exercises",
@@ -8,8 +9,8 @@ import { ActivatedRoute } from "@angular/router";
   styleUrls: ["./exercises.component.css"]
 })
 export class ExercisesComponent implements OnInit {
-  workoutDefinitionName: string = 'Workout to do';
-  workoutDefinition = [];
+  workoutDefinitionName: string;
+  workoutDefinition: Exercise[];
 
   constructor(private workoutDataService:WorkoutDataService,
     private route: ActivatedRoute) 

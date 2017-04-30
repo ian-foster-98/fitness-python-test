@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { ExerciseSet } from '../../../shared/exerciseset.model';
 
 @Component({
   selector: 'app-set',
@@ -6,7 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./set.component.css']
 })
 export class SetComponent implements OnInit {
-  @Input() set;
+  @Input() exerciseSet: ExerciseSet;
 
   constructor() { }
 
